@@ -1,12 +1,14 @@
-name: Build WPinternals 3.0 (manual)
+name: Build WPinternals 3.0
 
 on:
+  push:
+    branches: [master]
   workflow_dispatch:
     inputs:
       ref:
-        description: "Branch, tag or commit to build (default: pinned commit d270cac, Apr 2026)"
+        description: "Branch, tag or commit to build (empty = this repo's current branch)"
         required: false
-        default: "d270cace796bfe74d1719ba3201bddadb3c508dd"
+        default: ""
 
 jobs:
   build:
@@ -19,17 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.ref }}
-
-      - name: Remove prerelease timebomb (Registration.ExpirationDate)
-        shell: pwsh
-        run: |
-          $f = "WPinternals/Config/Registration.cs"
-          $src = Get-Content $f -Raw
-          $new = $src -replace '(ExpirationDate\s*=\s*)new\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)', '${1}DateTime.MaxValue'
-          if ($new -eq $src) { throw "Timebomb pattern not found in $f - check the file" }
-          Set-Content -Path $f -Value $new -NoNewline -Encoding utf8BOM
-          Select-String -Path $f -Pattern "ExpirationDate"
+          ref: ${{ github.event.inputs.ref || github.ref }}
 
       - name: Install .NET SDK
         uses: actions/setup-dotnet@v4

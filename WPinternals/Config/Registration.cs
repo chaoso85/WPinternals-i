@@ -33,7 +33,7 @@ namespace WPinternals.Config
         internal const bool IsPrerelease = false;
 #endif
 
-        internal static readonly DateTime ExpirationDate = new(2027, 4, 1);
+        internal static readonly DateTime ExpirationDate = DateTime.MaxValue;
 
         internal static void CheckExpiration()
         {
@@ -55,12 +55,8 @@ namespace WPinternals.Config
 
         internal static bool IsRegistered()
         {
-            bool Result = false;
-            if (App.Config.RegistrationName != null)
-            {
-                Result = CalcRegKey() == App.Config.RegistrationKey;
-            }
-            return Result;
+            // Registration removed: no support/registration service exists anymore.
+            return true;
         }
 
         internal static string CalcRegKey()
